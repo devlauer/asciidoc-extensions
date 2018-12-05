@@ -1,0 +1,16 @@
+<verifications xmlns="http://maven.apache.org/verifications/1.0.0"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://maven.apache.org/verifications/1.0.0 http://maven.apache.org/xsd/verifications-1.0.0.xsd">
+  <files>
+    <file>
+      <location>target/docs/asciidoc/test.html</location>
+      <exists>true</exists>
+      <contains>multixcontent2</contains>
+    </file>
+    <file>
+      <location>target/docs/asciidoc/remoteplantuml.html</location>
+      <exists>true</exists>
+      <contains>http://www.plantuml.com/supertest</contains>
+    </file>
+  </files>
+</verifications>

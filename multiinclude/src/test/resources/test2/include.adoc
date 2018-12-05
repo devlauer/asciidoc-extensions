@@ -1,0 +1,19 @@
+Testinclude 2
+
+// tag::test[]
+this is a test content 2
+// end::test[]
+
+this is another content 2
+
+// tag::multitest[]
+
+multicontent2
+
+// end::multitest[]
+
+// tag::multitestx[]
+
+multixcontent2
+
+// end::multitestx[]

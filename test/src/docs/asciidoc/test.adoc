@@ -1,0 +1,13 @@
+
+
+normal include 1
+
+include::./test1/include.adoc[tag=test]
+
+normal include 2
+
+include::./test2/include.adoc[tag=test]
+
+multiinclude with internal include in file 1 which refers to file 2
+
+include::./**/include.adoc[tag=multitest]

@@ -1,0 +1,24 @@
+image::https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg[Tux,250,350]
+
+This is just a text.
+
+
+[plantuml, diagram-classes, png, width=200, height=100]     
+----
+class BlockProcessor
+class DiagramBlock
+class DitaaBlock
+class PlantUmlBlock
+
+BlockProcessor <|-- DiagramBlock
+DiagramBlock <|-- DitaaBlock
+DiagramBlock <|-- PlantUmlBlock
+----
+
+This is another text.
+
+[java]
+----
+Javablock
+----
+

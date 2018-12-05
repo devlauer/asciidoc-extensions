@@ -1,0 +1,7 @@
+
+
+include::../test1/include.adoc[tag=test]
+
+include::../test2/include.adoc[tag=test]
+
+include::../**/include.adoc[tag=multitest]

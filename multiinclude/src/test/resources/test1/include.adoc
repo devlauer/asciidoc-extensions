@@ -1,0 +1,15 @@
+Testinclude
+
+// tag::test[]
+this is a test content
+// end::test[]
+
+this is another content
+
+// tag::multitest[]
+
+multicontent1
+
+include::../test2/include.adoc[tag=multitestx]
+
+// end::multitest[]
