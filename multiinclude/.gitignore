@@ -1,3 +1,5 @@
 /target/
 /output.xml
 /test.txt
+/.classpath
+/.project
