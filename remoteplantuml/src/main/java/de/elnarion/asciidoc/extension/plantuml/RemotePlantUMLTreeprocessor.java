@@ -46,15 +46,23 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 	@Override
 	public Document process(Document paramDocument) {
 		List<AbstractBlock> blocks = paramDocument.getBlocks();
+		processBlocks(blocks);
+		return null;
+	}
+
+	private void processBlocks(List<AbstractBlock> blocks) {
 		if (blocks != null) {
 			for (int i = 0; i < blocks.size(); i++) {
 				AbstractBlock currentBlock = blocks.get(i);
 				if (currentBlock instanceof Block) {
 					processBlock(blocks, i, currentBlock);
 				}
+				List<AbstractBlock> subBlocks = currentBlock.getBlocks();
+				if (subBlocks != null) {
+					processBlocks(subBlocks);
+				}
 			}
 		}
-		return null;
 	}
 
 	/**
