@@ -1,10 +1,10 @@
 package de.elnarion.asciidoc.extension.plantuml;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.asciidoctor.ast.AbstractBlock;
@@ -23,8 +23,7 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 	private static final String STYLE = "style";
 	private static final String WIDTH = "width";
 	private static final String HEIGHT = "height";
-	private static final Logger LOGGER = LogManager.getLogManager()
-			.getLogger(RemotePlantUMLTreeprocessor.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(RemotePlantUMLTreeprocessor.class.getName()); 
 
 	/**
 	 * Instantiates a new RemotePlantUMLTreeprocessor.
@@ -43,23 +42,62 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 		super(paramConfig);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.asciidoctor.extension.Treeprocessor#process(org.asciidoctor.ast.Document)
+	 */
 	@Override
 	public Document process(Document paramDocument) {
 		List<AbstractBlock> blocks = paramDocument.getBlocks();
+		iterateOver(blocks);
 		processBlocks(blocks);
 		return null;
 	}
 
-	private void processBlocks(List<AbstractBlock> blocks) {
-		if (blocks != null) {
-			for (int i = 0; i < blocks.size(); i++) {
-				AbstractBlock currentBlock = blocks.get(i);
-				if (currentBlock instanceof Block) {
-					processBlock(blocks, i, currentBlock);
-				}
-				List<AbstractBlock> subBlocks = currentBlock.getBlocks();
-				if (subBlocks != null) {
-					processBlocks(subBlocks);
+	/**
+	 * Iterates over all abstract blocks of a list and replaces all concrete
+	 * implementations of Block with a wrapper class named DelegateBlock which adds
+	 * a content_model method to this wrapped instance. This is necessary because
+	 * the block object in jruby has this method, but the java implementation not.
+	 *
+	 * @param paramBlocks the blocks to scan and eventually replace
+	 */
+	@SuppressWarnings("deprecation")
+	private void iterateOver(final List<AbstractBlock> paramBlocks) {
+		for (int i = 0; i < paramBlocks.size(); i++) {
+			if (paramBlocks.get(i) instanceof AbstractBlock) {
+				iterateOver(paramBlocks.get(i).blocks()); // NOSONAR
+			}
+			if (paramBlocks.get(i) instanceof Block) {
+				final Block currentBlock = new DelegateBlock((Block) paramBlocks.get(i), config.get("content_model"));
+				paramBlocks.set(i, currentBlock);
+			}
+		}
+	}
+
+	/**
+	 * Process blocks for this extension and replace plantuml blocks by image blocks
+	 * with a plantuml server url containing the same plantuml information.
+	 *
+	 * @param paramBlocks the blocks to process
+	 */
+	private void processBlocks(List<AbstractBlock> paramBlocks) {
+		if (paramBlocks != null) {
+			for (int i = 0; i < paramBlocks.size(); i++) {
+				Object obj = paramBlocks.get(i);
+				if (obj instanceof AbstractBlock) {
+					AbstractBlock currentBlock = paramBlocks.get(i);
+					if (currentBlock instanceof DelegateBlock) {
+						processBlock(paramBlocks, i, (Block) ((DelegateBlock) currentBlock).getOrigBlock());
+					} else if (currentBlock instanceof Block) {
+						processBlock(paramBlocks, i, (Block) currentBlock);
+					}
+					List<AbstractBlock> subBlocks = currentBlock.getBlocks();
+					if (subBlocks != null) {
+						processBlocks(subBlocks);
+					}
 				}
 			}
 		}
@@ -72,8 +110,8 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 	 * @param paramIndex  - int - the index of the current block
 	 * @param paramBlock  - AbstractBlock - the current block to process
 	 */
-	private void processBlock(List<AbstractBlock> paramBlocks, int paramIndex, AbstractBlock paramBlock) {
-		Block block = (Block) paramBlock;
+	private void processBlock(List<AbstractBlock> paramBlocks, int paramIndex, Block paramBlock) {
+		Block block = paramBlock;
 		@SuppressWarnings("rawtypes")
 		Map attributes = block.getAttributes();
 		Long firstAttribute = Long.valueOf(1);
@@ -82,7 +120,7 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 					: attributes.get(Long.valueOf(1l)));
 			if ("plantuml".equalsIgnoreCase(attributeValue)) {
 				Block imageBlock = createImageBlock(block, attributes);
-				paramBlocks.set(paramIndex, imageBlock);
+				paramBlocks.set(paramIndex, new DelegateBlock(imageBlock, config.get("content_model")));
 			}
 		}
 	}
@@ -102,7 +140,9 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 		String url = (String) paramPlantUMLDiagramBlock.getParent().getAttr("remote_plantuml_url");
 		if (url == null)
 			throw new IllegalStateException("Remote PlantUML Extension: attribute remote_plantuml_url not found");
+		LOGGER.fine("remote_plantuml_url:" + url); // NOSONAR
 		String encodedPlantUMLString = convertPlantUMLLines(lines);
+		LOGGER.fine("encodedString:" + encodedPlantUMLString); // NOSONAR
 		Map newAttributes = new HashMap();
 		newAttributes.put("alt", paramBlockAttributes.get(Long.valueOf(2l)));
 		newAttributes.put("title", paramBlockAttributes.get(Long.valueOf(2l)));
@@ -113,7 +153,8 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 			newAttributes.put(HEIGHT, paramBlockAttributes.get(HEIGHT));
 		}
 		newAttributes.put("target", url + encodedPlantUMLString);
-		return createBlock((AbstractBlock) paramPlantUMLDiagramBlock.getParent(), "image", "", newAttributes,
+		List<String> contentList = new ArrayList<>();
+		return createBlock((AbstractBlock) paramPlantUMLDiagramBlock.getParent(), "image", contentList, newAttributes,
 				new HashMap());
 	}
 

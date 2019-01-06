@@ -59,6 +59,7 @@
 		<module>multiinclude</module>
 		<module>remoteplantuml</module>
 		<module>test</module>
+		<module>asciidoclet</module>
 	</modules>
 
 
