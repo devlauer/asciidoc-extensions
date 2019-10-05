@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.asciidoctor.ast.AbstractBlock;
 import org.asciidoctor.ast.Block;
 import org.asciidoctor.ast.Document;
+import org.asciidoctor.ast.StructuralNode;
 import org.asciidoctor.extension.Treeprocessor;
 
 import net.sourceforge.plantuml.code.TranscoderUtil;
@@ -23,7 +23,7 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 	private static final String STYLE = "style";
 	private static final String WIDTH = "width";
 	private static final String HEIGHT = "height";
-	private static final Logger LOGGER = Logger.getLogger(RemotePlantUMLTreeprocessor.class.getName()); 
+	private static final Logger LOGGER = Logger.getLogger(RemotePlantUMLTreeprocessor.class.getName());
 
 	/**
 	 * Instantiates a new RemotePlantUMLTreeprocessor.
@@ -50,29 +50,21 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 	 */
 	@Override
 	public Document process(Document paramDocument) {
-		List<AbstractBlock> blocks = paramDocument.getBlocks();
+		List<StructuralNode> blocks = paramDocument.getBlocks();
 		iterateOver(blocks);
 		processBlocks(blocks);
 		return null;
 	}
 
 	/**
-	 * Iterates over all abstract blocks of a list and replaces all concrete
-	 * implementations of Block with a wrapper class named DelegateBlock which adds
-	 * a content_model method to this wrapped instance. This is necessary because
-	 * the block object in jruby has this method, but the java implementation not.
+	 * Iterates over all structural nodes of a list
 	 *
 	 * @param paramBlocks the blocks to scan and eventually replace
 	 */
-	@SuppressWarnings("deprecation")
-	private void iterateOver(final List<AbstractBlock> paramBlocks) {
+	private void iterateOver(final List<StructuralNode> paramBlocks) {
 		for (int i = 0; i < paramBlocks.size(); i++) {
-			if (paramBlocks.get(i) instanceof AbstractBlock) {
-				iterateOver(paramBlocks.get(i).blocks()); // NOSONAR
-			}
-			if (paramBlocks.get(i) instanceof Block) {
-				final Block currentBlock = new DelegateBlock((Block) paramBlocks.get(i), config.get("content_model"));
-				paramBlocks.set(i, currentBlock);
+			if (paramBlocks.get(i) instanceof StructuralNode) {
+				iterateOver(paramBlocks.get(i).getBlocks()); // NOSONAR
 			}
 		}
 	}
@@ -83,21 +75,16 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 	 *
 	 * @param paramBlocks the blocks to process
 	 */
-	private void processBlocks(List<AbstractBlock> paramBlocks) {
+	private void processBlocks(List<StructuralNode> paramBlocks) {
 		if (paramBlocks != null) {
 			for (int i = 0; i < paramBlocks.size(); i++) {
-				Object obj = paramBlocks.get(i);
-				if (obj instanceof AbstractBlock) {
-					AbstractBlock currentBlock = paramBlocks.get(i);
-					if (currentBlock instanceof DelegateBlock) {
-						processBlock(paramBlocks, i, (Block) ((DelegateBlock) currentBlock).getOrigBlock());
-					} else if (currentBlock instanceof Block) {
-						processBlock(paramBlocks, i, (Block) currentBlock);
-					}
-					List<AbstractBlock> subBlocks = currentBlock.getBlocks();
-					if (subBlocks != null) {
-						processBlocks(subBlocks);
-					}
+				StructuralNode structuralNode = paramBlocks.get(i);
+				if (structuralNode instanceof Block) {
+					processBlock(paramBlocks, i, (Block) structuralNode);
+				}
+				List<StructuralNode> subBlocks = structuralNode.getBlocks();
+				if (subBlocks != null) {
+					processBlocks(subBlocks);
 				}
 			}
 		}
@@ -110,17 +97,16 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 	 * @param paramIndex  - int - the index of the current block
 	 * @param paramBlock  - AbstractBlock - the current block to process
 	 */
-	private void processBlock(List<AbstractBlock> paramBlocks, int paramIndex, Block paramBlock) {
+	private void processBlock(List<StructuralNode> paramBlocks, int paramIndex, Block paramBlock) {
 		Block block = paramBlock;
-		@SuppressWarnings("rawtypes")
-		Map attributes = block.getAttributes();
-		Long firstAttribute = Long.valueOf(1);
+		Map<String, Object> attributes = block.getAttributes();
+		String firstAttribute = "1";
 		if (attributes.containsKey(STYLE) || attributes.containsKey(firstAttribute)) {
 			String attributeValue = (String) (attributes.containsKey(STYLE) ? attributes.get(STYLE)
-					: attributes.get(Long.valueOf(1l)));
+					: attributes.get(firstAttribute));
 			if ("plantuml".equalsIgnoreCase(attributeValue)) {
 				Block imageBlock = createImageBlock(block, attributes);
-				paramBlocks.set(paramIndex, new DelegateBlock(imageBlock, config.get("content_model")));
+				paramBlocks.set(paramIndex, imageBlock);
 			}
 		}
 	}
@@ -134,18 +120,17 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 	 *                                  diagram block
 	 * @return Block - the image block
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Block createImageBlock(Block paramPlantUMLDiagramBlock, Map paramBlockAttributes) {
-		List<String> lines = paramPlantUMLDiagramBlock.lines();
-		String url = (String) paramPlantUMLDiagramBlock.getParent().getAttr("remote_plantuml_url");
+	private Block createImageBlock(Block paramPlantUMLDiagramBlock, Map<String, Object> paramBlockAttributes) {
+		List<String> lines = paramPlantUMLDiagramBlock.getLines();
+		String url = (String) paramPlantUMLDiagramBlock.getDocument().getAttribute("remote_plantuml_url");
 		if (url == null)
 			throw new IllegalStateException("Remote PlantUML Extension: attribute remote_plantuml_url not found");
 		LOGGER.fine("remote_plantuml_url:" + url); // NOSONAR
 		String encodedPlantUMLString = convertPlantUMLLines(lines);
 		LOGGER.fine("encodedString:" + encodedPlantUMLString); // NOSONAR
-		Map newAttributes = new HashMap();
-		newAttributes.put("alt", paramBlockAttributes.get(Long.valueOf(2l)));
-		newAttributes.put("title", paramBlockAttributes.get(Long.valueOf(2l)));
+		Map<String, Object> newAttributes = new HashMap<>();
+		newAttributes.put("alt", paramBlockAttributes.get("2"));
+		newAttributes.put("title", paramBlockAttributes.get("2"));
 		if (paramBlockAttributes.containsKey(WIDTH)) {
 			newAttributes.put(WIDTH, paramBlockAttributes.get(WIDTH));
 		}
@@ -154,8 +139,8 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 		}
 		newAttributes.put("target", url + encodedPlantUMLString);
 		List<String> contentList = new ArrayList<>();
-		return createBlock((AbstractBlock) paramPlantUMLDiagramBlock.getParent(), "image", contentList, newAttributes,
-				new HashMap());
+		return createBlock((StructuralNode)paramPlantUMLDiagramBlock.getParent(), "image", contentList, newAttributes,
+				new HashMap<Object,Object>());
 	}
 
 	/**

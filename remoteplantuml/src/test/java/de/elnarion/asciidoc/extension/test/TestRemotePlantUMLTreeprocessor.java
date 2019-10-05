@@ -25,7 +25,7 @@ public class TestRemotePlantUMLTreeprocessor {
 		Attributes asciidocAttributes = new Attributes();
 		asciidocAttributes.setAttribute("remote_plantuml_url", "http://www.plantuml.com/plantuml/png/");
 		asciidocAttributes.setAllowUriRead(true);
-		asciidocAttributes.setBackend("docbook");
+		asciidocAttributes.setBackend("html");
 
 		Options asciidocOptions = new Options();
 		asciidocOptions.setSafe(SafeMode.UNSAFE);
