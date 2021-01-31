@@ -19,9 +19,8 @@
 	<url>https://github.com/devlauer/asciidoc-extensions</url>
 
 	<properties>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.13.1</junit.version>
+		<java.version>7</java.version>
 	</properties>
 
 	<issueManagement>
