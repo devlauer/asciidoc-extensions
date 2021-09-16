@@ -36,7 +36,7 @@ public class RemotePlantUMLTreeprocessor extends Treeprocessor {
 	 * Instantiates a new RemotePlantUMLTreeprocessor with specific configurations
 	 * e.g. an address to a remote PlantUML-Server.
 	 *
-	 * @param paramConfig - Map<String, Object> - the PreProcessor configuration
+	 * @param paramConfig - Map&lt;String, Object&gt; - the PreProcessor configuration
 	 */
 	public RemotePlantUMLTreeprocessor(Map<String, Object> paramConfig) {
 		super(paramConfig);
