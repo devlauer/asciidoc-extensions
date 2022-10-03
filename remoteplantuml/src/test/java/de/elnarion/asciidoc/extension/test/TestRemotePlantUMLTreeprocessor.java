@@ -1,6 +1,6 @@
 package de.elnarion.asciidoc.extension.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
@@ -9,32 +9,24 @@ import org.asciidoctor.Asciidoctor.Factory;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.Options;
 import org.asciidoctor.SafeMode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * This class tests the RemotePlantUMLTreeprocessor.
  */
-public class TestRemotePlantUMLTreeprocessor {
+class TestRemotePlantUMLTreeprocessor {
 
 	/**
 	 * Simple test of the plant UML replacement.
 	 */
 	@Test
-	public void testPlantUMLReplacement() {
+	void testPlantUMLReplacement() {
 		Asciidoctor asciidoctor = Factory.create();
-		Attributes asciidocAttributes = new Attributes();
-		asciidocAttributes.setAttribute("remote_plantuml_url", "http://www.plantuml.com/plantuml/png/");
-		asciidocAttributes.setAllowUriRead(true);
-		asciidocAttributes.setBackend("html");
-
-		Options asciidocOptions = new Options();
-		asciidocOptions.setSafe(SafeMode.UNSAFE);
-		asciidocOptions.setInPlace(true);
-		asciidocOptions.setToFile(false);
-		asciidocOptions.setAttributes(asciidocAttributes);
+		Attributes asciidocAttributes = Attributes.builder().attribute("remote_plantuml_url", "http://www.plantuml.com/plantuml/png/").allowUriRead(true).backend("html").build();
+		
+		Options asciidocOptions = Options.builder().safe(SafeMode.UNSAFE).inPlace(true).toFile(false).attributes(asciidocAttributes).build();
 
 		String testResult = asciidoctor.convertFile(new File("./src/test/resources/test.adoc"), asciidocOptions);
-		System.out.println(testResult);
 		assertTrue(testResult.contains("www.plantuml.com"));
 
 	}

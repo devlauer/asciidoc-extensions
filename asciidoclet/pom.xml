@@ -24,9 +24,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.asciidoctor</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>asciidoclet</artifactId>
-			<version>1.5.6</version>
+			<version>2.0.0</version>
 		</dependency>
 	</dependencies>
 
@@ -37,9 +37,9 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>org.asciidoctor</groupId>
+					<groupId>${project.groupId}</groupId>
 					<artifactId>asciidoclet</artifactId>
-					<version>1.5.6</version>
+					<version>2.0.0</version>
 					<exclusions>
 						<exclusion>
 							<groupId>com.sun.tools</groupId>
