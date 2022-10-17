@@ -21,9 +21,6 @@
 					<sourceDirectory>src/docs/asciidoc</sourceDirectory>
 					<outputDirectory>target/docs/asciidoc</outputDirectory>
 					<backend>xhtml5</backend>
-					<requires>
-						<require>elnarion/multiinclude-processor</require>
-					</requires>
 					<logHandler>
 						<outputToConsole>true</outputToConsole>
 					</logHandler>
