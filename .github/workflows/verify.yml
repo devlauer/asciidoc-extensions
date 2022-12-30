@@ -1,0 +1,52 @@
+name: Verify source code changes
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, synchronize, reopened]    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '11' ]   
+    name: Verify source code changes on Java ${{ matrix.Java }} 
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Get changed source files or maven poms of all modules
+      id: changed-files-specific
+      uses: tj-actions/changed-files@v35
+      with:
+        files: |
+          pom.xml
+          .mvn/**
+          .github/workflows/verify.yml
+          asciidoclet/pom.xml
+          multiinclude/pom.xml
+          multiinclude/src/main/**
+          multiinclude/src/test/**
+          remoteplantuml/pom.xml
+          remoteplantuml/src/main/**
+          remoteplantuml/src/test/**
+          test/pom.xml
+          test/src/**
+    - name: Set up JDK
+      if: steps.changed-files-specific.outputs.any_changed == 'true'
+      uses: actions/setup-java@v3      
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.java }}
+        cache: 'maven'
+    - name: Analyze with SonarCloud
+      if: ${{steps.changed-files-specific.outputs.any_changed == 'true' && github.event_name != 'pull_request'}}
+      run: ./mvnw -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.coverage.jacoco.xmlReportPaths=\${project.build.directory}/site/jacoco/jacoco.xml -Dsonar.projectKey=devlauer_asciidoc-extensions -Dsonar.login=$SONAR_TOKEN
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}        
+    - name: Verify via Maven without SonarCloud
+      if: ${{steps.changed-files-specific.outputs.any_changed == 'true' && github.event_name == 'pull_request'}}
+      run: ./mvnw -B verify 
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
