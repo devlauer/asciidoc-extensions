@@ -1,0 +1,12 @@
+= asciidoc-extensions
+
+image:https://sonarcloud.io/api/project_badges/measure?project=devlauer_asciidoc-extensions&metric=ncloc["Lines of Code", link="https://sonarcloud.io/summary/new_code?id=devlauer_asciidoc-extensions"]
+image:https://sonarcloud.io/api/project_badges/measure?project=devlauer_asciidoc-extensions&metric=security_rating["Security Rating", link="https://sonarcloud.io/summary/new_code?id=devlauer_asciidoc-extensions"]
+image:https://sonarcloud.io/api/project_badges/measure?project=devlauer_asciidoc-extensions&metric=vulnerabilities["Vulnerabilities", link="https://sonarcloud.io/summary/new_code?id=devlauer_asciidoc-extensions"]
+image:https://sonarcloud.io/api/project_badges/measure?project=devlauer_asciidoc-extensions&metric=sqale_rating["Maintainability Rating", link="https://sonarcloud.io/summary/new_code?id=devlauer_asciidoc-extensions"]
+image:https://sonarcloud.io/api/project_badges/measure?project=devlauer_asciidoc-extensions&metric=coverage["Coverage", link="https://sonarcloud.io/summary/new_code?id=devlauer_asciidoc-extensions"]
+image:https://github.com/devlauer/asciidoc-extensions/actions/workflows/verify.yml/badge.svg["mvn verify"]
+
+
+== Description
+Contains several asciidoctorj extensions. One asciidoctorj extension which replaces plantuml blocks by image links referring to a remote plantuml server. This way it is possible to use plantuml in asciidoc builds without the need to install graphviz. One Extension to include multiple files with one include statement.
