@@ -1,3 +1,8 @@
 {
-	"extends": ["github>devlauer/renovate-config"]
+	"extends": ["github>devlauer/renovate-config"],
+	"maven": {
+		"ignoreDeps": [
+			"net.sourceforge.plantuml:plantuml"
+		]
+	}
 }
