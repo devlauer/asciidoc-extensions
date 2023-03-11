@@ -26,3 +26,4 @@ hs_err_pid*
 /target/
 /.settings/
 /.asciidoctorconfig.adoc
+/asciidoc-extensions.iml
