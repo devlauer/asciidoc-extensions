@@ -2,3 +2,5 @@
 /.classpath
 /.project
 /asciidoc-extension-remoteplantuml.iml
+/src/main/main.iml
+/src/test/test1.iml

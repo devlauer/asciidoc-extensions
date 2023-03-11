@@ -4,3 +4,6 @@
 /.classpath
 /.project
 /bin/
+/asciidoc-extension-multiinclude.iml
+/src/main/main1.iml
+/src/test/test.iml
