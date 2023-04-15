@@ -1,104 +1,108 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>de.elnarion.maven</groupId>
-		<artifactId>elnarion-parent-pom</artifactId>
-		<version>2.0.7</version>
-	</parent>
+    <parent>
+        <groupId>de.elnarion.maven</groupId>
+        <artifactId>elnarion-parent-pom</artifactId>
+        <version>2.0.7</version>
+    </parent>
 
-	<groupId>de.elnarion.asciidoc</groupId>
-	<artifactId>asciidoc-extensions</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
-	<packaging>pom</packaging>
+    <groupId>de.elnarion.asciidoc</groupId>
+    <artifactId>asciidoc-extensions</artifactId>
+    <version>1.0.2-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-	<name>${project.groupId}:${project.artifactId}</name>
-	<description>Contains several asciidoctorj extensions. One asciidoctorj extension which replaces plantuml blocks by image links referring to a remote plantuml server. This way it is possible to use plantuml in asciidoc builds without the need to install graphviz. One Extension to include multiple files with one include statement. </description>
-	<url>https://github.com/devlauer/asciidoc-extensions</url>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Contains several asciidoctorj extensions. One asciidoctorj extension which replaces plantuml blocks by
+        image links referring to a remote plantuml server. This way it is possible to use plantuml in asciidoc builds
+        without the need to install graphviz. One Extension to include multiple files with one include statement.
+    </description>
+    <url>https://github.com/devlauer/asciidoc-extensions</url>
 
-	<properties>
-		<junit.version>5.9.2</junit.version>
-		<java.version>8</java.version>
-	</properties>
+    <properties>
+        <junit.version>5.9.2</junit.version>
+        <java.version>8</java.version>
+    </properties>
 
-	<issueManagement>
-		<system>jira</system>
-		<url>https://github.com/devlauer/asciidoc-extensions/issues</url>
-	</issueManagement>
+    <issueManagement>
+        <system>jira</system>
+        <url>https://github.com/devlauer/asciidoc-extensions/issues</url>
+    </issueManagement>
 
-	<modules>
-		<module>multiinclude</module>
-		<module>remoteplantuml</module>
-		<module>test</module>
-		<module>asciidoclet</module>
-	</modules>
+    <modules>
+        <module>multiinclude</module>
+        <module>remoteplantuml</module>
+        <module>test</module>
+        <module>asciidoclet</module>
+    </modules>
 
 
-	<dependencies>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.asciidoctor</groupId>
-			<artifactId>asciidoctorj</artifactId>
-			<version>2.5.7</version>
-		</dependency>
-	</dependencies>
-	
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.jruby</groupId>
-				<artifactId>jruby</artifactId>
-				<version>9.4.2.0</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.asciidoctor</groupId>
+            <artifactId>asciidoctorj</artifactId>
+            <version>2.5.8</version>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-toolchains-plugin</artifactId>
-				<version>3.1.0</version>
-				<configuration>
-					<toolchains>
-						<!-- this project needs a JDK toolchain, version 15 -->
-						<jdk>
-							<version>11</version>
-						</jdk>
-					</toolchains>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>toolchain</goal>
-						</goals>
-						<!-- the toolchain goal binds to the validate phase automatically -->
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.asciidoctor</groupId>
-					<artifactId>asciidoctor-maven-plugin</artifactId>
-					<version>2.2.3</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jruby</groupId>
+                <artifactId>jruby</artifactId>
+                <version>9.4.2.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-	<scm>
-		<connection>scm:git:ssh://git@github.com/devlauer/asciidoc-extensions.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/devlauer/asciidoc-extensions.git</developerConnection>
-		<url>https://github.com/devlauer/asciidoc-extensions/tree/master</url>
-	  <tag>HEAD</tag>
-  </scm>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <toolchains>
+                        <!-- this project needs a JDK toolchain, version 15 -->
+                        <jdk>
+                            <version>11</version>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                        <!-- the toolchain goal binds to the validate phase automatically -->
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.asciidoctor</groupId>
+                    <artifactId>asciidoctor-maven-plugin</artifactId>
+                    <version>2.2.3</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <scm>
+        <connection>scm:git:ssh://git@github.com/devlauer/asciidoc-extensions.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/devlauer/asciidoc-extensions.git</developerConnection>
+        <url>https://github.com/devlauer/asciidoc-extensions/tree/master</url>
+        <tag>HEAD</tag>
+    </scm>
 
 
 </project>
